@@ -5,13 +5,14 @@
             <span id="title">Bada.nu</span>
         </div>
         <div id="main">
+            <graph :score="value.score"></graph>
         </div>
-        <router-view/>
     </div>
 </template>
 
 <script>
     // @ is an alias to /src
+    import Graph from '@/components/Graph.vue';
 
     export default {
         name: 'home',
@@ -29,6 +30,7 @@
             }
         },
         components: {
+          Graph
         },
         data(){
             return {
@@ -119,6 +121,7 @@
                 }
 
                 console.log(finalScore);
+                this.value.score = finalScore;
                 return finalScore;
             },
         }
