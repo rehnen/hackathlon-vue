@@ -26,32 +26,42 @@
 export default {
   name: 'stefan',
   created() {
-    this.$http.get('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/1/station/65090/period/latest-day/data.json')
-      .then((result) => {
-        result.data.value.forEach((value) => {
-          this.values.push({
-            date: value.date,
-            airTemp: value.value,
-            wind: '',
-            precipitation: '',
-            oceanTemp: '',
-            score: '',
-          });
-        });
-        this.apis.forEach((attribute) => {
-          this.$http.get(attribute.url)
-            .then((res) => {
-              res.data.value.forEach((value, i) => {
-                this.values[i][attribute.key] = value.value;
-              });
-            });
-        });
-        this.calculateScore();
-      });
+    // this.$http.get('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/1/station/65090/period/latest-day/data.json')
+    //   .then((result) => {
+    //     result.data.value.forEach((value) => {
+    //       this.values.push({
+    //         date: value.date,
+    //         airTemp: parseInt(value.value),
+    //         wind: '',
+    //         precipitation: '',
+    //         oceanTemp: '',
+    //         score: '',
+    //       });
+    //     });
+    //     this.apis.forEach((attribute) => {
+    //       this.$http.get(attribute.url)
+    //         .then((res) => {
+    //           res.data.value.forEach((value, i) => {
+    //             this.values[i][attribute.key] = parseInt(value.value);
+    //           });
+    //         });
+    //     });
+    //     this.calculateScore();
+    //   });
+    this.calculateScore();
   },
   data() {
     return {
-      values: [],
+      values: [
+        {
+          airTemp: 18,
+          date: 1523635200000,
+          oceanTemp: 18,
+          precipitation: 0.5,
+          score: 0,
+          wind: 2,
+        },
+      ],
       apis: [
         {
           url: 'https://opendata-download-metobs.smhi.se/api/version/latest/parameter/4/station/65090/period/latest-day/data.json',
@@ -102,21 +112,25 @@ export default {
         airTempScore = airTempScore > 25 ? 25 : airTempScore;
 
         let windScore = (25 / (wind.min - wind.max))
-            * (wind.min - value.wind) * wind.weight;
+            * (wind.min - value.wind);
         windScore = windScore > 25 ? 25 : windScore;
 
-        let precipitationScore = (25 / (precipitation.max - precipitation.min))
-            * (precipitation.min - value.precipitation) * precipitation.weight;
+        let precipitationScore = (25 / (precipitation.min - precipitation.max))
+            * (precipitation.min - value.precipitation);
         precipitationScore = precipitationScore > 25 ? 25 : precipitationScore;
 
         let oceanTempScore = (25 / (oceanTemp.max - oceanTemp.min))
-            * (value.oceanTemp - oceanTemp.min) * oceanTemp.weight;
+            * (value.oceanTemp - oceanTemp.min);
         oceanTempScore = oceanTempScore > 25 ? 25 : oceanTempScore;
 
         if (value.airTemp >= airTemp.min && value.wind <= wind.min
               && value.precipitation <= precipitation.min && value.oceanTemp >= oceanTemp.min) {
-          finalScore = (airTempScore + windScore + precipitationScore + oceanTempScore) /
-                (airTemp.weight + wind.weight + precipitation.weight + oceanTemp.weight);
+          finalScore = 4
+              * (((airTempScore * airTemp.weight)
+              + (windScore * wind.weight)
+              + (precipitationScore * precipitation.weight)
+              + (oceanTempScore * oceanTemp.weight))
+              / (airTemp.weight + wind.weight + precipitation.weight + oceanTemp.weight));
         }
 
         this.values[i].score = finalScore;
