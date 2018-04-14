@@ -7,6 +7,12 @@
 <script>
 export default {
   name: 'splash-screen',
+  created() {
+    this.$http.get('https://api.github.com/users/rehnen/repos')
+      .then((result) => {
+        console.log(result);
+      });
+  },
 };
 </script>
 
