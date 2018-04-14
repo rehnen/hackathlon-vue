@@ -16,32 +16,28 @@
     export default {
         name: 'home',
         created() {
-            // this.apis.forEach((attribute) => {
-            //     this.$http.get(attribute.url)
-            //         .then((res) => {
-            //             const value = res.data.value;
-            //             this.value[attribute.key] = parseInt(value[value.length - 1].value);
-            //         });
-            // });
-            // this.calculateScore();
-
-            // this.rotateData(0);
+            console.log(this.$route.query);
+            if(Object.keys(this.$route.query).length === 0) {
+                this.apis.forEach((attribute) => {
+                    this.$http.get(attribute.url)
+                        .then((res) => {
+                            const value = res.data.value;
+                            this.value[attribute.key] = parseInt(value[value.length - 1].value);
+                        });
+                });
+                this.calculateScore();
+            }
         },
         components: {
         },
         data(){
             return {
                 value: {
-                    airTemp: 17,
-                    oceanTemp: 21,
-                    precipitation: 4,
+                    airTemp: this.$route.query.airTemp ? parseInt(this.$route.query.airTemp) : 0,
+                    oceanTemp: this.$route.query.oceanTemp ? parseInt(this.$route.query.oceanTemp) : 0,
+                    precipitation: this.$route.query.precipitation ? parseInt(this.$route.query.precipitation) : 0,
                     score: 0,
-                    wind: 1,
-                    // airTemp: 0,
-                    // oceanTemp: 0,
-                    // precipitation: 0,
-                    // score: 0,
-                    // wind: 0,
+                    wind: this.$route.query.wind ? parseInt(this.$route.query.wind) : 0,
                 },
                 apis: [
                     {
@@ -123,8 +119,7 @@
                 }
 
                 console.log(finalScore);
-                return finalScore
-                // this.value.score = finalScore;
+                return finalScore;
             },
         }
     };
