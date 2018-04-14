@@ -1,13 +1,27 @@
 <template>
     <div id="app">
+        <link href="https://fonts.googleapis.com/css?family=Josefin+Slab" rel="stylesheet">
         <div id="top">
-            <span id="title">Plan 2 - Bath app</span>
+            <span id="title">Bada.nu | Karlskrona</span>
         </div>
         <div id="main">
-            <router-view/>
+            <information/>
         </div>
+        <router-view/>
     </div>
 </template>
+
+<script>
+// @ is an alias to /src
+import Information from './components/Information.vue';
+
+export default {
+  name: 'home',
+  components: {
+    Information,
+  },
+};
+</script>
 
 <style lang="less">
     body, html {
@@ -27,6 +41,8 @@
         padding-top: 15px;
         color: #1B2F33;
         font-weight: bold;
+        font-size: large;
+        font-family: 'Josefin Slab', Serif;
 
     }
     #app {
