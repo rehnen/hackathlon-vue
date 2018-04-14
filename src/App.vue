@@ -1,41 +1,83 @@
 <template>
-    <div id="app">
+    <div id="app" :style="bgc">
         <link href="https://fonts.googleapis.com/css?family=Josefin+Slab" rel="stylesheet">
         <div id="top">
-            <span id="title">Bada.nu | Karlskrona</span>
+            <span id="title">Bada.nu</span>
         </div>
         <div id="main">
-            <information/>
         </div>
         <router-view/>
     </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import Information from './components/Information.vue';
+    // @ is an alias to /src
 
-export default {
-  name: 'home',
-  components: {
-    Information,
-  },
-};
+    export default {
+        name: 'home',
+        components: {
+        },
+        data(){
+            return {
+                bgc: {
+                    'background-color': numberToColorHsl(50)
+                }
+            }
+        },
+    };
+
+    function hslToRgb(h, s, l) {
+        let r, g, b;
+
+        if (s === 0) {
+            r = g = b = l; // achromatic
+        } else {
+            function hue2rgb(p, q, t) {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                return p;
+            }
+
+            let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            let p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1 / 3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1 / 3);
+        }
+
+        return [Math.floor(r * 255), Math.floor(g * 255), Math.floor(b * 255)];
+    }
+
+    function numberToColorHsl(i) {
+        let hue = i * 1.2 / 360;
+        let rgb = hslToRgb(hue, 1, .5);
+        return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+    }
 </script>
 
 <style lang="less">
+    html{
+        height: 100%;
+    }
     body, html {
+        height: 100%;
         padding: 0;
         margin: 0;
     }
-    #top{
+
+    #top {
         display: inline-block;
-        background-color:#F0FBFF;
+        background-color: #F0FBFF;
         height: 50px;
         width: 100%;
         border-bottom: #BDF5FF 1px solid;
+        text-align: center;
     }
-    #title{
+
+    #title {
         display: inline-block;
         margin-left: 2.4rem;
         padding-top: 15px;
@@ -43,8 +85,8 @@ export default {
         font-weight: bold;
         font-size: large;
         font-family: 'Josefin Slab', Serif;
-
     }
+
     #app {
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
@@ -53,5 +95,10 @@ export default {
         display: block;
         margin-top: 0;
         width: 100%;
+        height: 100%;
+    }
+
+    #main {
+        height: 100%;
     }
 </style>
