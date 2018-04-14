@@ -1,68 +1,41 @@
 <template>
-    <div class="stefan">
-        <h1>This is stefan</h1>
-        <table>
-            <tr class="header">
-                <th>Date</th>
-                <th>Air Temperature</th>
-                <th>Wind</th>
-                <th>Precipitation</th>
-                <th>Ocean Temperature</th>
-                <th>Score</th>
-            </tr>
-            <tr v-for="value in values" :key="value.date">
-                <th>{{new Date(value.date)}}</th>
-                <th>{{value.airTemp}}</th>
-                <th>{{value.wind}}</th>
-                <th>{{value.precipitation}}</th>
-                <th>{{value.oceanTemp}}</th>
-                <th>{{value.score}}</th>
-            </tr>
-        </table>
-    </div>
+    <div class="stefan">{{value.score}}</div>
 </template>
 
 <script>
 export default {
   name: 'stefan',
   created() {
-    // this.$http.get('https://opendata-download-metobs.smhi.se/api/version/latest/parameter/1/station/65090/period/latest-day/data.json')
-    //   .then((result) => {
-    //     result.data.value.forEach((value) => {
-    //       this.values.push({
-    //         date: value.date,
-    //         airTemp: parseInt(value.value),
-    //         wind: '',
-    //         precipitation: '',
-    //         oceanTemp: '',
-    //         score: '',
-    //       });
-    //     });
-    //     this.apis.forEach((attribute) => {
-    //       this.$http.get(attribute.url)
-    //         .then((res) => {
-    //           res.data.value.forEach((value, i) => {
-    //             this.values[i][attribute.key] = parseInt(value.value);
-    //           });
-    //         });
-    //     });
-    //     this.calculateScore();
-    //   });
+    this.apis.forEach((attribute) => {
+      this.$http.get(attribute.url)
+        .then((res) => {
+          const value = res.data.value;
+          this.value[attribute.key] = parseInt(value[value.length - 1].value);
+        });
+    });
     this.calculateScore();
+
+    // this.rotateData(0);
   },
   data() {
     return {
-      values: [
-        {
-          airTemp: 18,
-          date: 1523635200000,
-          oceanTemp: 18,
-          precipitation: 0.5,
-          score: 0,
-          wind: 2,
-        },
-      ],
+      value: {
+        // airTemp: 18,
+        // oceanTemp: 18,
+        // precipitation: 0.5,
+        // score: 0,
+        // wind: 2,
+        airTemp: 0,
+        oceanTemp: 0,
+        precipitation: 0,
+        score: 0,
+        wind: 0,
+      },
       apis: [
+        {
+          url: 'https://opendata-download-metobs.smhi.se/api/version/latest/parameter/1/station/65090/period/latest-day/data.json',
+          key: 'airTemp',
+        },
         {
           url: 'https://opendata-download-metobs.smhi.se/api/version/latest/parameter/4/station/65090/period/latest-day/data.json',
           key: 'wind',
@@ -76,12 +49,46 @@ export default {
           key: 'oceanTemp',
         },
       ],
+      mockData: [
+        {
+          airTemp: 18,
+          oceanTemp: 18,
+          precipitation: 0.5,
+          score: 0,
+          wind: 2,
+        },
+        {
+          airTemp: 25,
+          oceanTemp: 19,
+          precipitation: 0,
+          score: 0,
+          wind: 5,
+        },
+        {
+          airTemp: 17,
+          oceanTemp: 17,
+          precipitation: 3,
+          score: 0,
+          wind: 1,
+        },
+        {
+          airTemp: 26,
+          oceanTemp: 20,
+          precipitation: 0,
+          score: 0,
+          wind: 7,
+        },
+        {
+          airTemp: 30,
+          oceanTemp: 21,
+          precipitation: 0,
+          score: 0,
+          wind: 9,
+        },
+      ],
     };
   },
   methods: {
-    formatDate(date) {
-      return new Date(date);
-    },
     calculateScore() {
       const airTemp = {
         max: 25,
@@ -105,41 +112,52 @@ export default {
         weight: 1,
       };
 
-      this.values.forEach((value, i) => {
-        let finalScore = 0;
-        let airTempScore = (25 / (airTemp.max - airTemp.min))
-            * (value.airTemp - airTemp.min);
-        airTempScore = airTempScore > 25 ? 25 : airTempScore;
+      let finalScore = 0;
+      let airTempScore = (25 / (airTemp.max - airTemp.min))
+            * (this.value.airTemp - airTemp.min);
+      airTempScore = airTempScore > 25 ? 25 : airTempScore;
 
-        let windScore = (25 / (wind.min - wind.max))
-            * (wind.min - value.wind);
-        windScore = windScore > 25 ? 25 : windScore;
+      let windScore = (25 / (wind.min - wind.max))
+            * (wind.min - this.value.wind);
+      windScore = windScore > 25 ? 25 : windScore;
 
-        let precipitationScore = (25 / (precipitation.min - precipitation.max))
-            * (precipitation.min - value.precipitation);
-        precipitationScore = precipitationScore > 25 ? 25 : precipitationScore;
+      let precipitationScore = (25 / (precipitation.min - precipitation.max))
+            * (precipitation.min - this.value.precipitation);
+      precipitationScore = precipitationScore > 25 ? 25 : precipitationScore;
 
-        let oceanTempScore = (25 / (oceanTemp.max - oceanTemp.min))
-            * (value.oceanTemp - oceanTemp.min);
-        oceanTempScore = oceanTempScore > 25 ? 25 : oceanTempScore;
+      let oceanTempScore = (25 / (oceanTemp.max - oceanTemp.min))
+            * (this.value.oceanTemp - oceanTemp.min);
+      oceanTempScore = oceanTempScore > 25 ? 25 : oceanTempScore;
 
-        if (value.airTemp >= airTemp.min && value.wind <= wind.min
-              && value.precipitation <= precipitation.min && value.oceanTemp >= oceanTemp.min) {
-          finalScore = 4
+      if (this.value.airTemp >= airTemp.min && this.value.wind <= wind.min
+            && this.value.precipitation <= precipitation.min
+            && this.value.oceanTemp >= oceanTemp.min) {
+        finalScore = 4
               * (((airTempScore * airTemp.weight)
               + (windScore * wind.weight)
               + (precipitationScore * precipitation.weight)
               + (oceanTempScore * oceanTemp.weight))
               / (airTemp.weight + wind.weight + precipitation.weight + oceanTemp.weight));
-        }
+      }
 
-        this.values[i].score = finalScore;
-      });
+      console.log(finalScore);
+      this.value.score = finalScore;
+    },
+    rotateData(index) {
+      this.value = this.mockData[index];
+      if (index !== 4) {
+        setTimeout(() => {
+          this.calculateScore();
+          this.rotateData(index + 1);
+        }, 1000);
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-
+    .stefan {
+        font-size: 80px;
+    }
 </style>
