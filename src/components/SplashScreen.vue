@@ -21,5 +21,10 @@ export default {
 </script>
 
 <style scoped lang="less">
-
+    .splash-screen{
+        display: block;
+        width: 300px;
+        height: 200px;
+        border: 1px blue solid;
+    }
 </style>
