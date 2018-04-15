@@ -2,7 +2,7 @@
     <div id="app" :style="bgc">
         <link href="https://fonts.googleapis.com/css?family=Josefin+Slab" rel="stylesheet">
         <div id="top">
-            <span id="title">Bada.nu</span>
+            <span id="title">Bada.nu | Karlskrona</span>
         </div>
         <div id="main">
             <graph id="graph" :score="value.score"></graph>
@@ -209,8 +209,8 @@
     #graph {
         position: fixed;
         top: 50%;
-        left: 50%;
+        left: 51%;
         /* bring your own prefixes */
-        transform: translate(-50%, -50%);
+        transform: translate(-51%, -50%);
     }
 </style>
