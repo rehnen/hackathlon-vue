@@ -5,7 +5,7 @@
             <span id="title">Bada.nu</span>
         </div>
         <div id="main">
-            <graph :score="value.score"></graph>
+            <graph id="graph" :score="value.score"></graph>
         </div>
     </div>
 </template>
@@ -200,6 +200,17 @@
     }
 
     #main {
-        height: 100%;
+        height: calc(100% - 50px);
+        width: 100%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    #graph {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
     }
 </style>
