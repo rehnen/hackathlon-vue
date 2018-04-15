@@ -5,7 +5,8 @@
             <span id="title">Bada.nu | Karlskrona</span>
         </div>
         <div id="main">
-            <graph id="graph" :score="value.score"></graph>
+            <img v-if="value.score === 100" id="duck" src="../public/rubber_duck.png" alt="">
+            <graph v-else id="graph" :score="value.score"></graph>
         </div>
     </div>
 </template>
@@ -207,6 +208,15 @@
     }
 
     #graph {
+        position: fixed;
+        top: 50%;
+        left: 51%;
+        /* bring your own prefixes */
+        transform: translate(-51%, -50%);
+    }
+
+    #duck {
+        width: 40%;
         position: fixed;
         top: 50%;
         left: 51%;
